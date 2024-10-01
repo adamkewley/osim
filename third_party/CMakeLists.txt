@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(osim VERSION 0.0.1 LANGUAGES C CXX)
+project(osim-dependencies)
 
 set(OSCDEPS_BUILD_ALWAYS OFF CACHE BOOL "set BUILD_ALWAYS on all dependency targets, useful when editing dependencies")
 
@@ -35,7 +35,7 @@ if(TRUE)
 endif()
 
 ExternalProject_Add(OpenBLAS
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/OpenBLAS
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/OpenBLAS
     BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
     CMAKE_CACHE_ARGS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
@@ -45,7 +45,7 @@ ExternalProject_Add(OpenBLAS
 
 ExternalProject_Add(simbody
     DEPENDS OpenBLAS
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/simbody
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/simbody
     BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
     CMAKE_CACHE_ARGS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
@@ -59,7 +59,7 @@ ExternalProject_Add(simbody
 )
 
 ExternalProject_Add(catch2
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/catch2
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/catch2
     BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
     CMAKE_CACHE_ARGS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
@@ -71,7 +71,7 @@ if(MSVC)
     set(SPDLOG_CXX_FLAGS "${SPDLOG_CXX_FLAGS} /D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING")
 endif()
 ExternalProject_Add(spdlog
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/spdlog
     BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
     CMAKE_CACHE_ARGS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
