@@ -4,6 +4,9 @@ project(osim VERSION 0.0.1 LANGUAGES C CXX)
 
 set(OSCDEPS_BUILD_ALWAYS OFF CACHE BOOL "set BUILD_ALWAYS on all dependency targets, useful when editing dependencies")
 
+include(ExternalProject)  # ExternalProject_Add
+include(GNUInstallDirs)  # CMAKE_INSTALL_LIBDIR
+
 # setup `OSCDEPS_DEPENDENCY_CMAKE_ARGS`
 #
 # these are cache args that should be forwarded to external dependency projects
@@ -31,11 +34,26 @@ if(TRUE)
     unset(OSCDEPS_FORWARDED_VARS)
 endif()
 
-ExternalProject_Add(OpenBlas
+ExternalProject_Add(OpenBLAS
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/OpenBLAS
     BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
     CMAKE_CACHE_ARGS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
-	-DC_LAPACK:BOOL=ON
-	-DBUILD_STATIC_LIBS=ON
+	    -DC_LAPACK:BOOL=ON
+	    -DBUILD_STATIC_LIBS:BOOL=ON
+)
+
+ExternalProject_Add(simbody
+    DEPENDS OpenBLAS
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/simbody
+    BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
+    CMAKE_CACHE_ARGS
+        ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
+        -DBUILD_USING_OTHER_LAPACK:STRING=${CMAKE_INSTALL_PREFIX}/lib/openblas.lib
+        -DBUILD_VISUALIZER:BOOL=OFF
+        -DBUILD_DYNAMIC_LIBRARIES:BOOL=OFF
+        -DBUILD_STATIC_LIBRARIES:BOOL=ON
+        -DBUILD_EXAMPLES:BOOL=OFF
+        -DBUILD_TESTING:BOOL=OFF
+        -DINSTALL_DOCS:BOOL=OFF
 )
