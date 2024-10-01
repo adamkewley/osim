@@ -36,7 +36,7 @@ target_include_directories(lepton PUBLIC
 )
 install(TARGETS lepton EXPORT OpenSimTargets)
 
-add_library(OpenSim STATIC ${OSIM_SOURCE_FILES})
+add_library(OpenSim SHARED ${OSIM_SOURCE_FILES})
 target_compile_definitions(OpenSim PRIVATE
     OPENSIM_ACTUATORS_MAJOR_VERSION=0
     OPENSIM_ACTUATORS_MINOR_VERSION=0
