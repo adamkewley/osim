@@ -57,3 +57,27 @@ ExternalProject_Add(simbody
         -DBUILD_TESTING:BOOL=OFF
         -DINSTALL_DOCS:BOOL=OFF
 )
+
+ExternalProject_Add(catch2
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/catch2
+    BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
+    CMAKE_CACHE_ARGS
+        ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
+)
+
+set(SPDLOG_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+if(MSVC)
+    # `spdlog` transitively uses a deprecated `stdext::checked_array_iterator`
+    set(SPDLOG_CXX_FLAGS "${SPDLOG_CXX_FLAGS} /D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING")
+endif()
+ExternalProject_Add(spdlog
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog
+    BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
+    CMAKE_CACHE_ARGS
+        ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
+        -DSPDLOG_BUILD_BENCH:BOOL=OFF
+        -DSPDLOG_BUILD_TESTS:BOOL=OFF
+        -DSPDLOG_BUILD_EXAMPLE:BOOL=OFF
+        -DSPDLOG_BUILD_SHARED:BOOL=OFF
+        -DCMAKE_CXX_FLAGS:STRING=${SPDLOG_CXX_FLAGS}
+)
