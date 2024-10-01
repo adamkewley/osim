@@ -1,0 +1,15 @@
+[submodule "third_party/simbody"]
+	path = third_party/simbody
+	url = https://github.com/simbody/simbody.git
+[submodule "third_party/spdlog"]
+	path = third_party/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "third_party/catch2"]
+	path = third_party/catch2
+	url = https://github.com/catchorg/Catch2.git
+[submodule "third_party/opensim-core"]
+	path = third_party/opensim-core
+	url = https://github.com/opensim-org/opensim-core
+[submodule "third_party/OpenBLAS"]
+	path = third_party/OpenBLAS
+	url = https://github.com/OpenMathLib/OpenBLAS.git
