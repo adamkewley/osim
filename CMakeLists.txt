@@ -8,7 +8,9 @@ find_package(Simbody REQUIRED CONFIG)
 include(GNUInstallDirs) # CMAKE_INSTALL_LIBDIR, _INCLUDEDIR, etc.
 include(CMakePackageConfigHelpers)  # configure_package_config_file
 
-file(GLOB_RECURSE OSIM_GLOBBED_FILES "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/OpenSim/**/*.c??")
+set(OSIM_OPENSIM_BASEDIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core")
+
+file(GLOB_RECURSE OSIM_GLOBBED_FILES "${OSIM_OPENSIM_BASEDIR}/OpenSim/**/*.c??")
 set(OSIM_EXCLUDED_PATTERNS "/Test/" "/Tests/" "/Examples/" "/Moco/" "/Sandbox/" "C3DFileAdapter")
 foreach(var ${OSIM_GLOBBED_FILES})
     set(OSIM_EXCLUDE FALSE)
@@ -23,15 +25,15 @@ foreach(var ${OSIM_GLOBBED_FILES})
 endforeach()
 
 add_library(lepton STATIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/CompiledExpression.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/ExpressionProgram.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/ExpressionTreeNode.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/Operation.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/ParsedExpression.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/src/Parser.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/CompiledExpression.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ExpressionProgram.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ExpressionTreeNode.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/Operation.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ParsedExpression.cpp"
+    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/Parser.cpp"
 )
 target_include_directories(lepton PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/Vendors/lepton/include>
+    $<BUILD_INTERFACE:${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/include>
     $<INSTALL_INTERFACE:include>
 )
 install(TARGETS lepton EXPORT OpenSimTargets)
@@ -55,7 +57,7 @@ target_compile_definitions(OpenSim PRIVATE
     OPENSIM_TOOLS_BUILD_VERSION=0
 )
 target_include_directories(OpenSim PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core>
+    $<BUILD_INTERFACE:${OSIM_OPENSIM_BASEDIR}>
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(OpenSim PUBLIC
@@ -66,18 +68,8 @@ target_link_libraries(OpenSim PUBLIC
     lepton
 )
 
-install(TARGETS OpenSim EXPORT OpenSimTargets)
-install(EXPORT OpenSimTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim)
-configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/OpenSimConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/OpenSimConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim
-)
-
-add_executable(demoapp demoapp.cpp)
-target_link_libraries(demoapp OpenSim)
-
-file(GLOB_RECURSE OSIM_GLOBBED_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/OpenSim/**/*.h")
+# attach sources
+file(GLOB_RECURSE OSIM_GLOBBED_HEADERS "${OSIM_OPENSIM_BASEDIR}/OpenSim/**/*.h")
 foreach(var ${OSIM_GLOBBED_HEADERS})
     set(OSIM_EXCLUDE FALSE)
     foreach(pattern ${OSIM_EXCLUDED_PATTERNS})
@@ -91,5 +83,18 @@ foreach(var ${OSIM_GLOBBED_HEADERS})
 endforeach()
 
 foreach(header ${OSIM_HEADER_FILES})
-    message(INFO ${header})
+    file(RELATIVE_PATH header_relpath ${OSIM_OPENSIM_BASEDIR} ${header})
+    get_filename_component(DIR ${header_relpath} DIRECTORY)
+    install(FILES ${header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIR})
 endforeach()
+
+install(TARGETS OpenSim EXPORT OpenSimTargets)
+install(EXPORT OpenSimTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim)
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/OpenSimConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/OpenSimConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim
+)
+
+add_executable(demoapp demoapp.cpp)
+target_link_libraries(demoapp OpenSim)
