@@ -36,7 +36,7 @@ target_include_directories(lepton PUBLIC
 )
 install(TARGETS lepton EXPORT OpenSimTargets)
 
-add_library(OpenSim SHARED ${OSIM_SOURCE_FILES})
+add_library(OpenSim STATIC ${OSIM_SOURCE_FILES})
 target_compile_definitions(OpenSim PRIVATE
     OPENSIM_ACTUATORS_MAJOR_VERSION=0
     OPENSIM_ACTUATORS_MINOR_VERSION=0
@@ -58,7 +58,7 @@ target_include_directories(OpenSim PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core>
     $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(OpenSim PUBLIC 
+target_link_libraries(OpenSim PUBLIC
     SimTKcommon_static
     SimTKmath_static
     SimTKsimbody_static
@@ -74,3 +74,22 @@ configure_package_config_file(
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim
 )
 
+add_executable(demoapp demoapp.cpp)
+target_link_libraries(demoapp OpenSim)
+
+file(GLOB_RECURSE OSIM_GLOBBED_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core/OpenSim/**/*.h")
+foreach(var ${OSIM_GLOBBED_HEADERS})
+    set(OSIM_EXCLUDE FALSE)
+    foreach(pattern ${OSIM_EXCLUDED_PATTERNS})
+        if("${var}" MATCHES "${pattern}")
+            set(OSIM_EXCLUDE TRUE)
+        endif()
+    endforeach()
+    if(NOT ${OSIM_EXCLUDE})
+        list(APPEND OSIM_HEADER_FILES "${var}")
+    endif()
+endforeach()
+
+foreach(header ${OSIM_HEADER_FILES})
+    message(INFO ${header})
+endforeach()
