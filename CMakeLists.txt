@@ -10,6 +10,7 @@ include(CMakePackageConfigHelpers)  # configure_package_config_file
 
 set(OSIM_OPENSIM_BASEDIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core")
 
+# figure out which subset of sourcecode to use for `osim`
 file(GLOB_RECURSE OSIM_GLOBBED_FILES "${OSIM_OPENSIM_BASEDIR}/OpenSim/**/*.c??")
 set(OSIM_EXCLUDED_PATTERNS "/Test/" "/Tests/" "/Examples/" "/Moco/" "/Sandbox/" "C3DFileAdapter")
 foreach(var ${OSIM_GLOBBED_FILES})
@@ -24,19 +25,14 @@ foreach(var ${OSIM_GLOBBED_FILES})
     endif()
 endforeach()
 
-add_library(lepton STATIC
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/CompiledExpression.cpp"
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ExpressionProgram.cpp"
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ExpressionTreeNode.cpp"
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/Operation.cpp"
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/ParsedExpression.cpp"
-    "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/Parser.cpp"
-)
+file(GLOB_RECURSE OSIM_GLOBBED_LEPTON_SOURCES "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/src/*.cpp")
+add_library(lepton STATIC ${OSIM_GLOBBED_LEPTON_SOURCES})
 target_include_directories(lepton PUBLIC
     $<BUILD_INTERFACE:${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/include>
     $<INSTALL_INTERFACE:include>
 )
-install(TARGETS lepton EXPORT OpenSimTargets)
+file(GLOB_RECURSE OSIM_GLOBBED_LEPTON_HEADERS "${OSIM_OPENSIM_BASEDIR}/Vendors/lepton/include/lepton/*.h")
+install(FILES ${OSIM_GLOBBED_LEPTON_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/lepton")
 
 add_library(OpenSim STATIC ${OSIM_SOURCE_FILES})
 target_compile_definitions(OpenSim PRIVATE
@@ -88,13 +84,18 @@ foreach(header ${OSIM_HEADER_FILES})
     install(FILES ${header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIR})
 endforeach()
 
-install(TARGETS OpenSim EXPORT OpenSimTargets)
+# test executable
+add_executable(demoapp demoapp.cpp)
+target_link_libraries(demoapp OpenSim)
+
+# installation
+install(TARGETS OpenSim lepton EXPORT OpenSimTargets)
 install(EXPORT OpenSimTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim)
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/OpenSimConfig.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/OpenSimConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim
 )
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OpenSimConfig.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim")
 
-add_executable(demoapp demoapp.cpp)
-target_link_libraries(demoapp OpenSim)
+# aliases, for OpenSimCrator

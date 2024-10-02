@@ -2,3 +2,16 @@
 include(CMakeFindDependencyMacro)
 include("${CMAKE_CURRENT_LIST_DIR}/OpenSimTargets.cmake")
 
+find_package(Simbody CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
+add_library(SimTKcommon ALIAS SimTKcommon_static)
+add_library(SimTKmath ALIAS SimTKmath_static)
+add_library(SimTKsimbody ALIAS SimTKsimbody_static)
+add_library(osimCommon ALIAS OpenSim)
+add_library(osimSimulation ALIAS OpenSim)
+add_library(osimActuators ALIAS OpenSim)
+add_library(osimAnalyses ALIAS OpenSim)
+add_library(osimTools ALIAS OpenSim)
+add_library(osimLepton ALIAS OpenSim)
+add_library(osimExampleComponents ALIAS OpenSim)

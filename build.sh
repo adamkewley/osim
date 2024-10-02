@@ -1,6 +1,6 @@
 #export CFLAGS=-fPIC
 #export CXXFLAGS=-fPIC
-OSIM_BUILD_TYPE=RelMinSize
+OSIM_BUILD_TYPE=MinSizeRel
 
 rm -rf build/ deps-build/ install/
 
