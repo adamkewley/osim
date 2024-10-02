@@ -1,12 +1,12 @@
 [submodule "third_party/simbody"]
 	path = third_party/simbody
-	url = https://github.com/simbody/simbody.git
+	url = https://github.com/adamkewley/simbody.git
 [submodule "third_party/spdlog"]
 	path = third_party/spdlog
 	url = https://github.com/gabime/spdlog.git
 [submodule "third_party/opensim-core"]
 	path = third_party/opensim-core
-	url = https://github.com/opensim-org/opensim-core
+	url = https://github.com/adamkewley/opensim-core
 [submodule "third_party/OpenBLAS"]
 	path = third_party/OpenBLAS
 	url = https://github.com/OpenMathLib/OpenBLAS.git
