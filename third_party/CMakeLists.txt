@@ -58,13 +58,6 @@ ExternalProject_Add(simbody
         -DINSTALL_DOCS:BOOL=OFF
 )
 
-ExternalProject_Add(catch2
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/catch2
-    BUILD_ALWAYS ${OSCDEPS_BUILD_ALWAYS}
-    CMAKE_CACHE_ARGS
-        ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
-)
-
 set(SPDLOG_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if(MSVC)
     # `spdlog` transitively uses a deprecated `stdext::checked_array_iterator`
