@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(osim VERSION 0.0.1 LANGUAGES CXX)
-
-find_package(spdlog REQUIRED CONFIG)
-find_package(Simbody REQUIRED CONFIG)
+cmake_policy(SET CMP0007 NEW)
 
 include(GNUInstallDirs) # CMAKE_INSTALL_LIBDIR, _INCLUDEDIR, etc.
 include(CMakePackageConfigHelpers)  # configure_package_config_file
+include(FindPython3)
+
+find_package(spdlog REQUIRED CONFIG)
+find_package(Simbody REQUIRED CONFIG)
+find_package(Python3 COMPONENTS Development NumPy)
 
 set(OSIM_OPENSIM_BASEDIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/opensim-core")
 
@@ -84,9 +87,9 @@ foreach(header ${OSIM_HEADER_FILES})
     install(FILES ${header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIR})
 endforeach()
 
-# test executable
-add_executable(demoapp demoapp.cpp)
-target_link_libraries(demoapp OpenSim)
+# python bindings
+add_library(lib SHARED lib.cpp)
+target_link_libraries(lib PUBLIC Python3::Python)
 
 # installation
 install(TARGETS OpenSim lepton EXPORT OpenSimTargets)
@@ -98,4 +101,3 @@ configure_package_config_file(
 )
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OpenSimConfig.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/OpenSim")
 
-# aliases, for OpenSimCrator
