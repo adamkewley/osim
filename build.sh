@@ -4,9 +4,7 @@ set -xeuo pipefail
 
 export CC=clang
 export CXX=clang++
-OSIM_BUILD_TYPE=MinSizeRel
-
-rm -rf build/ deps-build/ install/ osc-build/ oscdeps-build/
+OSIM_BUILD_TYPE=RelWithDebInfo
 
 # config+build these deps into install/
 cmake -S third_party/ -B deps-build -DCMAKE_BUILD_TYPE=${OSIM_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${PWD}/install

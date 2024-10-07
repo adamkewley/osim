@@ -44,7 +44,6 @@ ExternalProject_Add(OpenBLAS
         ${OSCDEPS_DEPENDENCY_CMAKE_ARGS}
 	    -DC_LAPACK:BOOL=ON
 	    -DBUILD_STATIC_LIBS:BOOL=ON
-	    -DTARGET:STRING=GENERIC
 )
 
 ExternalProject_Add(simbody
